@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentkit"
+version = "0.1.0"
+description = "Biblioteca de referencia da disciplina de IA Agentica, Unidade I"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "transformers>=4.56",
+    "numpy",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ipykernel"]
+structured = ["outlines>=1,<2", "pydantic>=2"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["agentkit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "slow: teste de integracao que carrega o modelo real",
+]
