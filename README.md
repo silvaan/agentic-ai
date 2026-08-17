@@ -70,18 +70,7 @@ agentkit/
 └── agent.py    laço do agente
 ```
 
-## Instalação
-
-```bash
-pip install -e .
-```
-
 O único backend é um modelo local do Hugging Face carregado com `transformers`.
-A parte de geração estruturada usa dependências opcionais:
-
-```bash
-pip install -e ".[structured]"
-```
 
 ## Uso
 
