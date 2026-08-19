@@ -66,6 +66,9 @@ class LLM:
                 do_sample=sampling,
                 temperature=temperature if sampling else None,
                 top_p=top_p if sampling else None,
+                # O modelo publica top_k no generation_config, e sem amostragem
+                # ele vira um argumento inválido que o transformers avisa.
+                top_k=None,
                 pad_token_id=self.tokenizer.pad_token_id,
             )
         new_tokens = output[0][inputs["input_ids"].shape[-1] :]

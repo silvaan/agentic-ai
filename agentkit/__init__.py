@@ -4,6 +4,13 @@ Ela não é um framework. Foi escrita para ser lida, inclusive com
 inspect.getsource dentro do notebook.
 """
 
+import os
+
+# O transformers importa o TensorFlow quando ele está instalado, e ele registra
+# avisos de compilação no primeiro import. Silenciar aqui evita que a saída da
+# primeira célula de qualquer notebook comece com eles.
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
+
 from .agent import run_agent
 from .memory import (
     add_message,
