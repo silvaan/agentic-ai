@@ -6,6 +6,8 @@ tokenizador. O resto do agentkit é função.
 
 from __future__ import annotations
 
+import copy
+import json
 import time
 
 import numpy as np
@@ -37,6 +39,7 @@ class LLM:
         # Nem todo tokenizador define token de preenchimento; o de fim serve.
         if self.tokenizer.pad_token_id is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
+        self.tools: list[dict] = []
         self.last_usage: dict = {}
         self.usage: list[dict] = []
 
@@ -83,14 +86,28 @@ class LLM:
         self.usage.append(self.last_usage)
         return text
 
-    def chat(self, messages: list[dict], **kwargs) -> str:
-        """Aplica o template de conversa às mensagens e gera a resposta."""
-        prompt = self.tokenizer.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-        return self.generate(prompt, **kwargs)
+    def chat(self, messages: list[dict], **kwargs) -> str | dict:
+        """Aplica o template de conversa às mensagens e gera a resposta.
 
-    def invoke(self, input: str | list[dict], **kwargs) -> str:
+        Com ferramentas ligadas por bind_tools, devolve a mensagem do assistente
+        em vez do texto, com a chave tool_calls quando o modelo pede uma chamada.
+        """
+        prompt = self.tokenizer.apply_chat_template(
+            messages, tools=self.tools or None, tokenize=False, add_generation_prompt=True
+        )
+        text = self.generate(prompt, **kwargs)
+        if not self.tools:
+            return text
+        calls = parse_tool_calls(text)
+        if not calls:
+            return {"role": "assistant", "content": text}
+        return {
+            "role": "assistant",
+            "content": text.split("<tool_call>")[0].strip(),
+            "tool_calls": calls,
+        }
+
+    def invoke(self, input: str | list[dict], **kwargs) -> str | dict:
         """Encaminha string para generate e lista de mensagens para chat.
 
         É o método usado no restante do pacote, para que o agente e a memória
@@ -99,6 +116,12 @@ class LLM:
         if isinstance(input, str):
             return self.generate(input, **kwargs)
         return self.chat(input, **kwargs)
+
+    def bind_tools(self, tools: list) -> "LLM":
+        """Devolve uma cópia do modelo com as ferramentas ligadas às chamadas."""
+        bound = copy.copy(self)
+        bound.tools = [fn.tool_schema for fn in tools]
+        return bound
 
     def generate_structured(
         self,
@@ -111,7 +134,7 @@ class LLM:
             from outlines import Generator, from_transformers
         except ImportError as exc:
             raise ImportError(
-                "Instale as dependências com: pip install -e \".[structured]\""
+                "Instale o outlines com: pip install \"outlines>=1,<2\""
             ) from exc
 
         if isinstance(prompt_or_messages, str):
@@ -137,6 +160,22 @@ class LLM:
         }
         self.usage.append(self.last_usage)
         return schema.model_validate_json(text)
+
+
+def parse_tool_calls(text: str) -> list[dict]:
+    """Lê os blocos tool_call do texto, no formato estilo Hermes usado pelo Qwen.
+
+    Lista vazia é o sinal de que o texto é a resposta final.
+    """
+    calls = []
+    for block in text.split("<tool_call>")[1:]:
+        try:
+            call = json.loads(block.split("</tool_call>")[0])
+        except json.JSONDecodeError:
+            continue
+        if isinstance(call.get("name"), str):
+            calls.append({"name": call["name"], "arguments": call.get("arguments", {})})
+    return calls
 
 
 class Embeddings:

@@ -11,7 +11,7 @@ import os
 # primeira célula de qualquer notebook comece com eles.
 os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "3")
 
-from .agent import run_agent
+from .agent import Agent, run_agent
 from .memory import (
     add_message,
     forget,
@@ -31,6 +31,7 @@ from .tools import (
 
 __all__ = [
     "LLM",
+    "Agent",
     "Embeddings",
     "tool",
     "render_tools",

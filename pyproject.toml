@@ -12,11 +12,12 @@ dependencies = [
     "torch",
     "transformers>=4.56",
     "numpy",
+    "pydantic>=2",
+    "outlines>=1,<2",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest", "ipykernel"]
-structured = ["outlines>=1,<2", "pydantic>=2"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["agentkit"]

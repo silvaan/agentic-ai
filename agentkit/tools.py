@@ -86,20 +86,18 @@ def parse_tool_call(text: str) -> dict | None:
     return {"name": data["name"], "arguments": arguments if isinstance(arguments, dict) else {}}
 
 
-def run_tool(call: dict, tools: list[Callable]) -> dict:
-    """Executa a chamada e devolve sempre name, output e error.
+def run_tool(call: dict, tools: dict) -> str:
+    """Executa a chamada e devolve o resultado como texto.
 
     Este é o único ponto do pacote que captura exceção ampla, e a captura existe
     porque o erro precisa voltar ao modelo como observação, não interromper o
-    laço do agente. Ferramenta desconhecida também vira error.
+    laço do agente. Ferramenta desconhecida recebe o mesmo tratamento, já que o
+    nome também vem do modelo.
     """
-    name = call.get("name", "")
-    fn = next((fn for fn in tools if fn.tool_schema["name"] == name), None)
+    fn = tools.get(call.get("name", ""))
     if fn is None:
-        return {"name": name, "output": None, "error": f"Ferramenta desconhecida: {name}"}
+        return f"ferramenta desconhecida: {call.get('name', '')}"
     try:
-        output = fn(**call.get("arguments", {}))
+        return str(fn(**call.get("arguments", {})))
     except Exception as exc:
-        return {"name": name, "output": None, "error": f"{type(exc).__name__}: {exc}"}
-    return {"name": name, "output": output, "error": None}
-
+        return f"{type(exc).__name__}: {exc}"

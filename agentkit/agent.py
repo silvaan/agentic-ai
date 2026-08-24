@@ -15,6 +15,33 @@ from .tools import TOOL_SYSTEM_PROMPT, parse_tool_call, render_tools, run_tool
 DEFAULT_SYSTEM_PROMPT = "You are a concise and helpful assistant."
 
 
+class Agent:
+    """Modelo com ferramentas ligadas e o laço que alterna chamada e execução.
+
+    Usa o protocolo de ferramentas do template de conversa do modelo. Para
+    modelos sem esse protocolo, use run_agent, que escreve o protocolo textual
+    no prompt de sistema.
+    """
+
+    def __init__(self, llm: LLM, tools: list, max_steps: int = 5) -> None:
+        self.llm = llm.bind_tools(tools)
+        self.tools = {fn.tool_schema["name"]: fn for fn in tools}
+        self.max_steps = max_steps
+
+    def run(self, input: str | list[dict]) -> list[dict]:
+        """Responde à pergunta, ou continua a conversa, e devolve o histórico."""
+        messages = [{"role": "user", "content": input}] if isinstance(input, str) else list(input)
+        for _ in range(self.max_steps):
+            message = self.llm.invoke(messages)
+            messages.append(message)
+            if "tool_calls" not in message:
+                return messages
+            for call in message["tool_calls"]:
+                observation = run_tool(call, self.tools)
+                messages.append({"role": "tool", "name": call["name"], "content": observation})
+        return messages + [{"role": "assistant", "content": "limite de passos atingido"}]
+
+
 def run_agent(
     llm: LLM,
     question: str,
@@ -66,25 +93,17 @@ def run_agent(
             stop_reason = "final_answer"
             break
 
-        result = run_tool(call, tools)
+        observation = run_tool(call, {fn.tool_schema["name"]: fn for fn in tools})
         trace.append(
             {
                 "step": step,
                 "type": "tool",
-                "name": result["name"],
+                "name": call["name"],
                 "arguments": call["arguments"],
-                "output": result["output"],
-                "error": result["error"],
+                "observation": observation,
             }
         )
-        observation = result["error"] if result["error"] else result["output"]
-        messages.append(
-            {
-                "role": "tool",
-                "name": result["name"],
-                "content": str(observation),
-            }
-        )
+        messages.append({"role": "tool", "name": call["name"], "content": observation})
 
     usage = {
         "tokens_in": sum(item.get("tokens_in", 0) for item in trace if item["type"] == "model"),
