@@ -6,6 +6,8 @@ slides
 .claude/skills/
 .claude/settings.local.json
 construction/
+archive/
+plan*.txt
 
 __pycache__/
 *.egg-info/
