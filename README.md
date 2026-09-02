@@ -9,14 +9,9 @@ antes de ter sido construída. A Unidade II reescreve o que foi feito usando
 LangChain e LangGraph, com foco em confiabilidade. A Unidade III trata de
 sistemas multiagente.
 
-A ordem das aulas é de dependência, não de exposição. Ferramentas vêm antes de
-planejamento porque formam o menor laço fechado que já muda o comportamento
-observável do agente, e estado vem antes de planejamento porque replanejar exige
-lembrar o que já foi tentado.
-
 ## Cronograma
 
-**Unidade I — Anatomia de um Agente.** Python sobre modelo aberto local, sem
+**Unidade I: Anatomia de um Agente.** Python sobre modelo aberto local, sem
 frameworks de agentes.
 
 1. Panorama e loop mínimo de agente
@@ -29,7 +24,7 @@ frameworks de agentes.
 8. Planejamento e reflexão
 9. Harness e engenharia de laço
 
-**Unidade II — Agentes em Produção.** LangChain e LangGraph.
+**Unidade II: Agentes em Produção.** LangChain e LangGraph.
 
 1. LangChain e LangGraph
 2. Workflows com LangGraph
@@ -42,7 +37,7 @@ frameworks de agentes.
 9. Guardrails e segurança
 10. Observabilidade, avaliação e custo
 
-**Unidade III — Sistemas Multiagente.**
+**Unidade III: Sistemas Multiagente.**
 
 1. Fundamentos e arquiteturas de coordenação
 2. Supervisor na prática
