@@ -1,6 +1,6 @@
 """API de conversa com FastAPI.
 
-    uvicorn apps.api:app --reload
+    uvicorn apps.interfaces.api:app --reload
 """
 
 from fastapi import FastAPI

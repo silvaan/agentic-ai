@@ -1,6 +1,6 @@
 """Chat no terminal. O histórico vive em memória e morre com o processo.
 
-    python apps/chat.py
+    python apps/interfaces/chat.py
 """
 
 from agentkit import LLM

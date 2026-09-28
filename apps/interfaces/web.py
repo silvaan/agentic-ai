@@ -1,6 +1,6 @@
 """Chat com Streamlit.
 
-    streamlit run apps/web.py
+    streamlit run apps/interfaces/web.py
 """
 
 import streamlit as st

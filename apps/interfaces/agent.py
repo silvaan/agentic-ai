@@ -1,6 +1,6 @@
 """Agente no terminal, com ferramentas e várias sessões.
 
-    python apps/agent.py
+    python apps/interfaces/agent.py
 """
 
 from datetime import datetime
