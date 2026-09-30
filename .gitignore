@@ -18,6 +18,7 @@ workdir/
 workspace/
 memory.json
 .env
+uv.lock
 
 # gerados pelo notebook 11 - RAG
 regimento.pdf
@@ -25,3 +26,6 @@ chroma_regimento/
 
 # versões resolvidas dos notebooks
 solutions/
+
+# gerado pelo notebook 10
+checkpoints.db
