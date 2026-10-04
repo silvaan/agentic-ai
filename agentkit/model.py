@@ -481,3 +481,18 @@ class Embeddings:
         summed = (output.last_hidden_state * mask).sum(dim=1)
         counts = mask.sum(dim=1).clamp(min=1e-9)
         return (summed / counts).cpu().numpy()
+
+    def embed_documents(self, texts: list[str], batch_size: int = 32) -> list[list[float]]:
+        """Interface de embeddings do LangChain: um vetor por texto, em lotes.
+
+        Com estes dois métodos a classe pode ser passada a um vector store do
+        LangChain, como o Chroma, no lugar dos embeddings de um provedor.
+        """
+        vectors = []
+        for start in range(0, len(texts), batch_size):
+            vectors.extend(self.embed(texts[start:start + batch_size]).tolist())
+        return vectors
+
+    def embed_query(self, text: str) -> list[float]:
+        """Interface de embeddings do LangChain: o vetor de um único texto."""
+        return self.embed([text])[0].tolist()

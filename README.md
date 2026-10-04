@@ -54,6 +54,10 @@ Os notebooks das aulas ficam na raiz, numerados na ordem dos encontros. O
 componente do dia é escrito do zero no notebook e, a partir do encontro
 seguinte, passa a vir pronto da biblioteca.
 
+A pasta `apps/ingest` traz um exemplo fora da sequência das aulas: um workflow
+LangGraph que lê documentos escaneados, extrai os campos em um esquema e salva
+o resultado em JSON.
+
 O pacote `agentkit` é a biblioteca de referência da disciplina, construída ao
 longo da Unidade I:
 
