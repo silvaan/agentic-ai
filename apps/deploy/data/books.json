@@ -1,0 +1,6 @@
+{
+  "b1": {"title": "Duna", "author": "Frank Herbert", "price": 89.9, "stock": 4},
+  "b2": {"title": "Fundação", "author": "Isaac Asimov", "price": 59.9, "stock": 0},
+  "b3": {"title": "Neuromancer", "author": "William Gibson", "price": 64.9, "stock": 2},
+  "b4": {"title": "O Hobbit", "author": "J. R. R. Tolkien", "price": 49.9, "stock": 7}
+}
